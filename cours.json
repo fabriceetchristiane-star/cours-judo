@@ -1,1 +1,29 @@
-[]
+[
+  {
+    "technique": "mmmmm",
+    "date": "2026-04-26",
+    "sport": "Judo",
+    "groupe": "Enfants",
+    "niveau": "Débutants",
+    "theme": "Ne waza",
+    "duree": "60",
+    "objectif": "lllllllllll",
+    "echauf": "mmmmmmmmmmmm",
+    "desc": "mmmmmmmmmmm",
+    "defenses": "",
+    "enchainements": "",
+    "deplacements": "",
+    "notes": "",
+    "ressources": [
+      {
+        "type": "youtube",
+        "valeur": "https://youtu.be/NDaQuJOFBYk"
+      }
+    ],
+    "sequence": [
+      "",
+      "",
+      ""
+    ]
+  }
+]
