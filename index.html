@@ -167,9 +167,10 @@
     <h2>🔐 Connexion</h2>
     <p>Mot de passe pour éditer les cours.</p>
     <input type="password" id="inputMdp" placeholder="Mot de passe..." onkeydown="if(event.key==='Enter')validerLogin()">
-    ${!localStorage.getItem('gh_token_cours') ? `
-    <p style="margin-top:4px">Token GitHub (première connexion uniquement) :</p>
-    <input type="password" id="inputToken" placeholder="ghp_...">` : ''}
+    <div id="tokenZone" style="display:none">
+      <p style="margin-top:4px;font-size:0.82rem;color:var(--gris4)">Token GitHub (première fois uniquement) :</p>
+      <input type="password" id="inputToken" placeholder="ghp_...">
+    </div>
     <div class="modal-err" id="loginErr">Mot de passe incorrect</div>
     <div style="display:flex;gap:10px">
       <button class="btn-save" onclick="validerLogin()" style="flex:1">ENTRER</button>
@@ -184,7 +185,7 @@
 // =============================================
 // CONFIG
 // =============================================
-const GH_TOKEN   = localStorage.getItem('gh_token_cours') || '';
+let ghToken      = localStorage.getItem('gh_token_cours') || '';
 const GH_USER    = 'fabriceetchristiane-star';
 const GH_REPO    = 'cours-judo';
 const GH_FILE    = 'cours.json';
@@ -233,7 +234,7 @@ async function chargerDepuisGitHub() {
     const r = await fetch(RAW_URL + '?t=' + Date.now());
     if (!r.ok) throw new Error('HTTP '+r.status);
     cours = await r.json();
-    const r2 = await fetch(API_URL, {headers:{'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github.v3+json'}});
+    const r2 = await fetch(API_URL, {headers:{'Authorization':'token '+ghToken,'Accept':'application/vnd.github.v3+json'}});
     if (r2.ok) { const d=await r2.json(); ghSha=d.sha||''; }
     setSyncStatus('ok','✓ Synchronisé');
     renderSidebar();
@@ -252,7 +253,7 @@ async function sauvegarderSurGitHub() {
   try {
     const r = await fetch(API_URL, {
       method:'PUT',
-      headers:{'Authorization':'token '+GH_TOKEN,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},
+      headers:{'Authorization':'token '+ghToken,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},
       body: JSON.stringify(body)
     });
     if (!r.ok) { const e=await r.json(); throw new Error(e.message||'HTTP '+r.status); }
@@ -271,35 +272,41 @@ async function sauvegarderSurGitHub() {
 // =============================================
 function showLogin() {
   if (connecte) { deconnecter(); return; }
-  document.getElementById('modalLogin').style.display='flex';
+  // Afficher champ token si pas encore enregistré
+  document.getElementById('tokenZone').style.display =
+    localStorage.getItem('gh_token_cours') ? 'none' : 'block';
+  document.getElementById('loginErr').style.display = 'none';
+  document.getElementById('inputMdp').value = '';
+  document.getElementById('modalLogin').style.display = 'flex';
   document.getElementById('inputMdp').focus();
 }
 function fermerLogin() { document.getElementById('modalLogin').style.display='none'; }
 function validerLogin() {
   const mdp = document.getElementById('inputMdp').value;
-  if (mdp === MOT_PASSE) {
-    // Sauvegarder token si fourni
-    const t = document.getElementById('inputToken');
-    if (t && t.value.trim()) {
-      localStorage.setItem('gh_token_cours', t.value.trim());
-      location.reload(); return;
-    }
-    if (!localStorage.getItem('gh_token_cours')) {
-      document.getElementById('loginErr').textContent = 'Token GitHub requis !';
-      document.getElementById('loginErr').style.display='block';
-      return;
-    }
-    connecte = true;
-    fermerLogin();
-    document.getElementById('btnConnexion').textContent='🔓 Connecté';
-    document.getElementById('btnConnexion').style.color='var(--vert)';
-    showToast('Connecté — Mode édition actif','ok');
-    setMode('editer');
-  } else {
+  if (mdp !== MOT_PASSE) {
     document.getElementById('loginErr').textContent = 'Mot de passe incorrect';
-    document.getElementById('loginErr').style.display='block';
-    document.getElementById('inputMdp').value='';
+    document.getElementById('loginErr').style.display = 'block';
+    document.getElementById('inputMdp').value = '';
+    return;
   }
+  // Sauvegarder token si champ visible et rempli
+  const tokenInput = document.getElementById('inputToken');
+  if (tokenInput && tokenInput.value.trim()) {
+    localStorage.setItem('gh_token_cours', tokenInput.value.trim());
+  }
+  if (!localStorage.getItem('gh_token_cours')) {
+    document.getElementById('loginErr').textContent = 'Entre ton token GitHub ci-dessus';
+    document.getElementById('loginErr').style.display = 'block';
+    document.getElementById('tokenZone').style.display = 'block';
+    return;
+  }
+  connecte = true;
+  ghToken = localStorage.getItem('gh_token_cours');
+  fermerLogin();
+  document.getElementById('btnConnexion').textContent = '🔓 Connecté';
+  document.getElementById('btnConnexion').style.color = 'var(--vert)';
+  showToast('Connecté — Mode édition actif', 'ok');
+  setMode('editer');
 }
 function deconnecter() {
   connecte=false;
