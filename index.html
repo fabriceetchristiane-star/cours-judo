@@ -168,7 +168,7 @@
     <p>Mot de passe pour éditer les cours.</p>
     <input type="password" id="inputMdp" placeholder="Mot de passe..." onkeydown="if(event.key==='Enter')validerLogin()">
     <div id="tokenZone" style="display:none">
-      <p style="margin-top:4px;font-size:0.82rem;color:var(--gris4)">Token GitHub (première fois uniquement) :</p>
+      <p style="margin-top:4px;font-size:0.82rem;color:var(--gris4)">Token GitHub (visible et modifiable) :</p>
       <input type="password" id="inputToken" placeholder="ghp_...">
     </div>
     <div class="modal-err" id="loginErr">Mot de passe incorrect</div>
@@ -272,9 +272,9 @@ async function sauvegarderSurGitHub() {
 // =============================================
 function showLogin() {
   if (connecte) { deconnecter(); return; }
-  // Afficher champ token si pas encore enregistré
-  document.getElementById('tokenZone').style.display =
-    localStorage.getItem('gh_token_cours') ? 'none' : 'block';
+  // Toujours afficher le champ token pour permettre la mise à jour
+  document.getElementById('tokenZone').style.display = 'block';
+  document.getElementById('inputToken').value = localStorage.getItem('gh_token_cours') || '';
   document.getElementById('loginErr').style.display = 'none';
   document.getElementById('inputMdp').value = '';
   document.getElementById('modalLogin').style.display = 'flex';
