@@ -277,9 +277,10 @@ async function sauvegarderSurGitHub() {
 // =============================================
 function showLogin() {
   if (connecte) { deconnecter(); return; }
-  // Toujours afficher le champ token pour permettre la mise à jour
-  document.getElementById('tokenZone').style.display = 'block';
-  document.getElementById('inputToken').value = localStorage.getItem('gh_token_cours') || '';
+  // Afficher champ token si pas encore enregistré
+  document.getElementById('tokenZone').style.display =
+    localStorage.getItem('gh_token_cours') ? 'none' : 'block';
+  document.getElementById('inputToken').value = '';
   document.getElementById('loginErr').style.display = 'none';
   document.getElementById('inputMdp').value = '';
   document.getElementById('modalLogin').style.display = 'flex';
