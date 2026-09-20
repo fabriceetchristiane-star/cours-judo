@@ -1,1 +1,25 @@
-[]
+[
+  {
+    "technique": "nn",
+    "date": "2026-09-20",
+    "sport": "Judo",
+    "groupe": "Adultes",
+    "niveau": "Tous niveaux",
+    "theme": "Technique debout",
+    "duree": "90",
+    "objectif": "",
+    "echauf": "nnn",
+    "desc": "nnn",
+    "defenses": "nn",
+    "enchainements": "",
+    "deplacements": "nn",
+    "notes": "",
+    "ressources": [],
+    "sequence": [
+      "nn",
+      "nn",
+      "nn",
+      "nn"
+    ]
+  }
+]
